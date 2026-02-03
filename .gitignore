@@ -67,3 +67,23 @@ sample_data/
 *.pyc
 .octarine
 .ruff_cache
+# Data/Output
+*.xlsx
+*.xls
+*.ods
+*.pdf
+*.log
+output/
+results/
+generated/
+
+# Type checking & linting
+.mypy_cache/
+.pylint.d/
+
+# OS-specific
+Thumbs.db
+.AppleDouble/
+
+# Environment
+.env
