@@ -9,6 +9,7 @@ This tool orchestrates a complete motor analysis workflow that processes raw mea
 ### Process Workflow
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#f0f0f0', 'primaryTextColor':'#333', 'primaryBorderColor':'#666', 'lineColor':'#999', 'secondBkgColor':'#e8e8e8', 'tertiaryColor':'#fff'}}}%%
 graph TD
     A["Load Configuration<br/><br/>config.yaml"] --> B["Load & Validate<br/>Measurement Data<br/><br/>CSV file"]
     B --> C["Get Motor<br/>Parameters<br/><br/>Pole Pairs, Rs"]
@@ -17,15 +18,6 @@ graph TD
     E --> F["Generate PMAC Tables<br/>using IDW<br/><br/>psi_d and psi_q matrices"]
     F --> G["Plot Results<br/><br/>Torque Comparison"]
     G --> H["Analysis Complete"]
-    
-    style A fill:#e1f5ff
-    style B fill:#e1f5ff
-    style C fill:#fff3e0
-    style D fill:#f3e5f5
-    style E fill:#fff3e0
-    style F fill:#e8f5e9
-    style G fill:#fce4ec
-    style H fill:#c8e6c9
 ```
 
 ## Configuration
@@ -82,14 +74,12 @@ Required columns in the input CSV:
 ### Step 1: Data Loading & Validation
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#f0f0f0', 'primaryTextColor':'#333', 'primaryBorderColor':'#666', 'lineColor':'#999', 'secondBkgColor':'#e8e8e8', 'tertiaryColor':'#fff'}}}%%
 graph LR
     CSV["Raw CSV Data"] --> LOAD["Load File"]
     LOAD --> SELECT["Select Relevant Columns"]
     SELECT --> RENAME["Rename to Standard Names"]
     RENAME --> DF["Standardized DataFrame"]
-    
-    style CSV fill:#fff3e0
-    style DF fill:#e8f5e9
 ```
 
 Raw measurement data is loaded from CSV and standardized using column mappings from the configuration.
@@ -101,6 +91,7 @@ User is prompted to enter motor-specific parameters with configurable defaults s
 ### Step 3: Data Processing & Parameter Calculation
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#f0f0f0', 'primaryTextColor':'#333', 'primaryBorderColor':'#666', 'lineColor':'#999', 'secondBkgColor':'#e8e8e8', 'tertiaryColor':'#fff'}}}%%
 graph TD
     RAW["Raw Data<br/>Speed, Current, Voltage"] --> FREQ["Electrical Frequency<br/>we = wm * P * 2*pi/60"]
     RAW --> FLUX["Flux Linkage Calculations<br/>psi_d = -(Rs*Iq - Vq)/we<br/>psi_q = (Rs*Id - Vd)/we"]
@@ -110,9 +101,6 @@ graph TD
     FLUX --> OUT["Processed DataFrame<br/>with all calculations"]
     TRQ --> OUT
     RMS --> OUT
-    
-    style RAW fill:#fff3e0
-    style OUT fill:#e8f5e9
 ```
 
 Additional electrical parameters are calculated:
