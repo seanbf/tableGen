@@ -63,4 +63,5 @@ venv.bak/
 
 # Project specific
 sample_data/
-*.csv
+*.csv*.pyc
+.octarine
