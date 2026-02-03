@@ -29,7 +29,6 @@ dev-dependencies = [
 ]
 
 [tool.ruff]
-line-length = 88
 target-version = "py39"
 
 [tool.ruff.lint]
@@ -40,4 +39,4 @@ ignore = ["D100", "D104"]
 convention = "google"
 
 [tool.ruff.format]
-line-length = 88
+quote-style = "double"

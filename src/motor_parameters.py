@@ -4,7 +4,6 @@ This module provides functions for obtaining motor parameters from user input
 with configurable defaults and validation rules.
 """
 
-from typing import Any
 
 
 def get_motor_parameters(motor_config: dict) -> dict:

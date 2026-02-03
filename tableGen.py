@@ -6,7 +6,6 @@ documentation.
 """
 
 import sys
-from pathlib import Path
 
 from src.config_loader import load_config
 from src.data_loader import load_test_data
