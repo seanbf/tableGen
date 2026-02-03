@@ -1,0 +1,55 @@
+# tableGen Configuration
+# Data processing, motor parameters, and table generation settings
+# Used throughout the motor analysis and table generation workflow
+
+# Data Processing Configuration
+# Column name mappings and data processing settings
+data:
+  columnNames:
+    # Raw CSV column name mappings to standardized internal names
+    time: 'TimeStamp'
+    torqueMeasured: 'Torque'
+    speedMeasured: 'Speed'
+    voltageQAxis: 'VqFiltered'
+    voltageDAxis: 'VdFiltered'
+    currentQAxis: 'IqReq'
+    currentDAxis: 'WeakenedId'
+  
+  standardNames:
+    # Standardized output column names with units
+    time: 'timeS'
+    torqueMeasured: 'torqueMeasuredNm'
+    speedMeasured: 'speedRpm'
+    voltageQAxis: 'voltageQAxisVpeak'
+    voltageDAxis: 'voltageDAxisVpeak'
+    currentQAxis: 'currentQAxisApeak'
+    currentDAxis: 'currentDAxisApeak'
+
+# Motor-Specific Configuration
+# Motor parameter defaults and validation rules
+motor:
+  validation:
+    # Minimum valid values for motor parameters
+    minPolePairs: 1                    # Minimum pole pairs
+    minStatorResistance: 0.001         # Minimum stator resistance (Ohms)
+    minFluxLinkage: 0.001              # Minimum flux linkage (Wb)
+  
+  defaults:
+    # Default values for common motor types (3-phase motors)
+    polePairs: 6                       # Common for many motors
+    statorResistance: 0.068            # Typical value (Ohms) for medium motors
+    fluxLinkage: 0.05                  # Typical value (Wb) for PM motors
+
+# Table Generation Configuration
+# Table parameter defaults and validation rules
+table:
+  defaults:
+    # Default values for table generation
+    size: 20                           # Common default table size (rows)
+    maxCurrent: 200.0                  # Typical maximum current (Amps)
+  
+  validation:
+    # Validation ranges for table parameters
+    minSize: 10                        # Minimum table size (rows)
+    minMaxCurrent: 50.0                # Minimum valid maximum current (A)
+    maxMaxCurrent: 200.0               # Maximum valid maximum current (A)
