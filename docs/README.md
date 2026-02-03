@@ -227,9 +227,9 @@ $$\text{Value} = \frac{\sum (\text{Weight}_i \times \text{Value}_i)}{\sum \text{
 
 Where $d_i$ is the Euclidean distance from the target point to measured point $i$.
 
-## License
+## Licence
 
-[Specify your license here]
+[Specify your licence here]
 
 ## Contributing
 
