@@ -15,7 +15,7 @@ graph TD
     B --> C["Get Motor<br/>Parameters<br/><br/>Pole Pairs, Rs"]
     C --> D["Process Data &<br/>Calculate Parameters<br/><br/>Flux, Frequency, Torque"]
     D --> E["Get Table<br/>Parameters<br/><br/>Grid Size, Max Current"]
-    E --> F["Generate PMAC Tables<br/>using IDW<br/><br/>psi_d and psi_q matrices"]
+    E --> F["Generate PMAC Tables<br/>using IDW<br/><br/>psi_d & psi_q matrices"]
     F --> G["Plot Results<br/><br/>Torque Comparison"]
     G --> H["Analysis Complete"]
 ```
@@ -93,10 +93,10 @@ User is prompted to enter motor-specific parameters with configurable defaults s
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#f0f0f0', 'primaryTextColor':'#333', 'primaryBorderColor':'#666', 'lineColor':'#999', 'secondBkgColor':'#e8e8e8', 'tertiaryColor':'#fff'}}}%%
 graph TD
-    RAW["Raw Data<br/>Speed, Current, Voltage"] --> FREQ["Electrical Frequency<br/>we = wm * P * 2*pi/60"]
-    RAW --> FLUX["Flux Linkage Calculations<br/>psi_d = -(Rs*Iq - Vq)/we<br/>psi_q = (Rs*Id - Vd)/we"]
-    RAW --> TRQ["Electromagnetic Torque<br/>T = 1.5*P*(psi_d*Iq - psi_q*Id)"]
-    FREQ --> RMS["RMS Conversions<br/>Arms = Apeak/sqrt(2)<br/>Vrms = Vpeak/sqrt(2)"]
+    RAW["Raw Data<br/>Speed, Current, Voltage"] --> FREQ["Electrical Frequency<br/>ωe = ωm × P × 2π/60"]
+    RAW --> FLUX["Flux Linkage Calculations<br/>λd = -(Rs×Iq - Vq)/ωe<br/>λq = (Rs×Id - Vd)/ωe"]
+    RAW --> TRQ["Electromagnetic Torque<br/>T = 1.5×P×(λd×Iq - λq×Id)"]
+    FREQ --> RMS["RMS Conversions<br/>Arms = Apeak/√2<br/>Vrms = Vpeak/√2"]
     
     FLUX --> OUT["Processed DataFrame<br/>with all calculations"]
     TRQ --> OUT
@@ -197,40 +197,35 @@ tableGen/
 
 The flux linkage is calculated from the dq-voltage equation:
 
-```
-lambda_d = -(Rs * Iq - Vq) / we
-lambda_q = (Rs * Id - Vd) / we
-```
+$$\lambda_d = -\frac{R_s \times I_q - V_q}{\omega_e}$$
+
+$$\lambda_q = \frac{R_s \times I_d - V_d}{\omega_e}$$
 
 Where:
-- lambda_d, lambda_q = Direct and quadrature flux linkages (Wb-turns)
-- Rs = Stator resistance (Ohms)
-- Id, Iq = Direct and quadrature currents (A)
-- Vd, Vq = Direct and quadrature voltages (V)
-- we = Electrical frequency (rad/s)
+- $\lambda_d$, $\lambda_q$ = Direct and quadrature flux linkages (Wb-turns)
+- $R_s$ = Stator resistance (Ω)
+- $I_d$, $I_q$ = Direct and quadrature currents (A)
+- $V_d$, $V_q$ = Direct and quadrature voltages (V)
+- $\omega_e$ = Electrical frequency (rad/s)
 
 ### Electromagnetic Torque
 
-```
-Te = 1.5 * P * (lambda_d * Iq - lambda_q * Id)
-```
+$$T_e = \frac{3}{2} \times P \times (\lambda_d \times I_q - \lambda_q \times I_d)$$
 
 Where:
-- Te = Electromagnetic torque (Nm)
-- P = Number of pole pairs
-- Id, Iq = Direct and quadrature currents (A)
+- $T_e$ = Electromagnetic torque (Nm)
+- $P$ = Number of pole pairs
+- $I_d$, $I_q$ = Direct and quadrature currents (A)
 
 ### Inverse Distance Weighting Interpolation
 
-For each target point (Id, Iq), nearby measured points are weighted by:
+For each target point $(I_d, I_q)$, nearby measured points are weighted by:
 
-```
-Weight_i = 1 / d_i
+$$\text{Weight}_i = \frac{1}{d_i}$$
 
-Value = SUM(Weight_i * Value_i) / SUM(Weight_i)
-```
+$$\text{Value} = \frac{\sum (\text{Weight}_i \times \text{Value}_i)}{\sum \text{Weight}_i}$$
 
-Where d_i is the Euclidean distance from the target point to measured point i.
+Where $d_i$ is the Euclidean distance from the target point to measured point $i$.
 
 ## License
 
