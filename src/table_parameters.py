@@ -25,7 +25,6 @@ def get_table_parameters(table_config: dict) -> dict:
         print(f"Table size: {table_params['size']}")
     """
     defaults = table_config["table"]["defaults"]
-    validation = table_config["motor"]["validation"]
 
     # Prompt user for table size
     default_size = defaults["size"]

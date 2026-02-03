@@ -40,7 +40,8 @@ def main() -> None:
         data_table, success_flag = load_test_data(config)
 
         if not success_flag:
-            raise RuntimeError("Failed to load data. Please check the file and try again.")
+            msg = "Failed to load data. Please check the file and try again."
+            raise RuntimeError(msg)
         print()
 
         # Step 3: Get motor parameters
@@ -60,7 +61,7 @@ def main() -> None:
 
         # Step 6: Generate PMAC tables
         print("Step 4b: Generating PMAC tables...")
-        table_data = generate_pmac_tables(processed_data, motor_params, table_params)
+        generate_pmac_tables(processed_data, motor_params, table_params)
         print()
 
         # Step 7: Plot results
