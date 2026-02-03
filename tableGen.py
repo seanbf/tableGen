@@ -20,12 +20,13 @@ def main() -> None:
     """Execute the main PMAC table generation workflow.
 
     Orchestrates the complete process:
+    0. Load configuration
     1. Load and validate test data
     2. Get motor parameters from user input
     3. Process raw data and calculate electrical parameters
-    4. Get table generation parameters from user input
-    5. Generate PMAC lookup tables using IDW interpolation
-    6. Plot results
+    4a. Get table generation parameters from user input
+    4b. Generate PMAC lookup tables using IDW interpolation
+    5. Plot results
 
     Exits with status code 1 if any step fails.
     """

@@ -47,8 +47,9 @@ def calculate_flux_linkage_d_axis(
 ) -> float:
     """Calculate d-axis flux linkage using voltage equation.
 
-    Calculates the d-axis flux linkage using the voltage equation:
-    v = R*i + dλ/dt => λ = ∫(v - R*i)dt
+    Calculates the d-axis flux linkage from q-axis voltage and current
+    using the dq-reference frame voltage equation: v = R*i + dλ/dt.
+    This represents the coupling between d and q axes.
 
     Args:
         voltage_q_axis: Q-axis voltage in Volts.
@@ -72,8 +73,9 @@ def calculate_flux_linkage_q_axis(
 ) -> float:
     """Calculate q-axis flux linkage using voltage equation.
 
-    Calculates the q-axis flux linkage using the voltage equation:
-    v = R*i + dλ/dt => λ = ∫(v - R*i)dt
+    Calculates the q-axis flux linkage from d-axis voltage and current
+    using the dq-reference frame voltage equation: v = R*i + dλ/dt.
+    This represents the coupling between q and d axes.
 
     Args:
         voltage_d_axis: D-axis voltage in Volts.
