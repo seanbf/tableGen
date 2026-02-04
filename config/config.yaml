@@ -3,6 +3,17 @@
 # Used throughout the motor analysis and table generation workflow
 
 # Data Processing Configuration
+# Motor-Specific Configuration
+motor:
+  pole_pairs: 6                       # Pole pairs, not poles.
+  ke_v_krpm: 134.0                    # Back EMF constant (V_rms,LL / krpm)
+  rs_ohm: 0.068                       # Stator resistance (Ohms)
+
+# Table Generation Configuration
+table:
+  size: 20                           # Table size (rows)
+  max_current_a: 200.0               # Maximum current (Amps)
+
 data:
   column_names:
     # Raw CSV column name mappings to standardised internal names
@@ -36,14 +47,3 @@ data:
       uq_vrms: 'uq_vrms'
       ld_h: 'ld_h'
       lq_h: 'lq_h'
-
-# Motor-Specific Configuration
-motor:
-  pole_pairs: 6                       # Pole pairs, not poles.
-  ke_v_krpm: 134.0                    # Back EMF constant (V_rms,LL / krpm)
-  rs_ohm: 0.068                       # Stator resistance (Ohms)
-
-# Table Generation Configuration
-table:
-  size: 20                           # Table size (rows)
-  max_current_a: 200.0               # Maximum current (Amps)
