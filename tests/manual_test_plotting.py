@@ -1,3 +1,8 @@
+"""Manual verification script for dashboard plotting.
+
+This script generates synthetic motor data and launches the Plotly dashboard
+to manually verify that surfaces and traces are rendered correctly.
+"""
 import os
 import sys
 

@@ -1,4 +1,8 @@
-"""Unit tests for motor calculations."""
+"""Unit tests for motor calculations and interpolation utilities.
+
+This module provides automated verification for physical motor calculations
+and the generic Inverse Distance Weighting (IDW) interpolation engine.
+"""
 
 import pytest
 
@@ -54,3 +58,26 @@ def test_inductance_q_voltage():
     assert inductance_q_voltage(-50.0, 10.0, 100.0, 0.1, 20.0) == pytest.approx(0.0255)
     # Zero frequency/current denominator
     assert inductance_q_voltage(-50.0, 10.0, 100.0, 0.1, 0.0) == 0.0
+
+
+def test_interpolate_idw():
+    """Test generic IDW interpolation."""
+    import numpy as np
+
+    from src.lib.utils.interpolation import interpolate_idw
+
+    coords = np.array([[0, 0], [1, 1], [2, 2]])
+    values = np.array([[10, 100], [20, 200], [30, 300]])
+
+    # Exact match
+    res = interpolate_idw(coords, values, np.array([1, 1]), 1.0)
+    assert np.allclose(res, [20, 200])
+
+    # Interpolation between two points
+    # Point at (0.5, 0.5) is equidistant to (0,0) and (1,1)
+    res = interpolate_idw(coords, values, np.array([0.5, 0.5]), 1.0)
+    assert np.allclose(res, [15, 150])
+
+    # Out of range (max_dist) - picks nearest
+    res = interpolate_idw(coords, values, np.array([5, 5]), 1.0)
+    assert np.allclose(res, [30, 300])

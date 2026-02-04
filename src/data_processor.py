@@ -84,7 +84,9 @@ def process_data(
     )
 
     # Calculate inductances
-    # Note: We need psi_pm for Ld calculation. Assuming psi_wb from config/motor_params is the PM flux.
+    # Note: We need the permanent magnet flux linkage (psi_pm) for the D-axis
+    # inductance (Ld) calculation. We use the 'psi_wb' parameter obtained
+    # from the motor configuration or user input.
     psi_pm = motor_params["actual"]["psi_wb"]
     processed_data[comp_cols["ld_h"]] = processed_data.apply(
         lambda row: inductance_d(

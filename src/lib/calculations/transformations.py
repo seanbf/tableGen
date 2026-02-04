@@ -1,7 +1,8 @@
-"""Coordinate transformations for electrical systems.
+"""Coordinate transformation utilities for vector control.
 
-This module provides Clarke and Park transformations used in power systems
-and motor control applications to convert between reference frames.
+This module provides Clarke and Park transformations (and their inverses)
+used to convert between stationary three-phase, stationary two-phase,
+and rotating two-phase reference frames.
 """
 
 import math

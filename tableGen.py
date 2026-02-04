@@ -1,8 +1,7 @@
-"""Main entry point for PMAC table generation tool.
+"""Main entry point for the motor flux map generation tool.
 
-This script orchestrates the complete motor analysis workflow using modular
-functions with standard electrical engineering unit notation and comprehensive
-documentation.
+This script orchestrates the complete motor analysis workflow, focusing on
+generating 2D flux linkage maps from processed measurement data.
 """
 
 import sys
@@ -11,13 +10,13 @@ from src.config_loader import load_config
 from src.data_loader import load_test_data
 from src.data_processor import process_data
 from src.motor_parameters import get_motor_parameters
-from src.table_generator import generate_pmac_tables
+from src.table_generator import generate_flux_maps
 from src.table_parameters import get_table_parameters
 from src.ui import plot_results
 
 
 def main() -> None:
-    """Execute the main PMAC table generation workflow.
+    """Execute the main flux map generation workflow.
 
     Orchestrates the complete process:
     0. Load configuration
@@ -25,7 +24,7 @@ def main() -> None:
     2. Get motor parameters from user input
     3. Process raw data and calculate electrical parameters
     4a. Get table generation parameters from user input
-    4b. Generate PMAC lookup tables using IDW interpolation
+    4b. Generate 2D flux linkage maps using generic interpolation
     5. Plot results (Interactive Dashboard)
 
     Exits with status code 1 if any step fails.
@@ -60,9 +59,9 @@ def main() -> None:
         table_params = get_table_parameters(config)
         print()
 
-        # Step 6: Generate PMAC tables
-        print("Step 4b: Generating PMAC tables...")
-        generate_pmac_tables(processed_data, motor_params, table_params, config)
+        # Step 6: Generate flux maps
+        print("Step 4b: Generating flux maps...")
+        generate_flux_maps(processed_data, motor_params, table_params, config)
         print()
 
         # Step 7: Plot results

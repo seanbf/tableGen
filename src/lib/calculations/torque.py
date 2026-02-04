@@ -1,7 +1,7 @@
-"""Electromagnetic torque calculations.
+"""Electromagnetic torque calculations for synchronous machines.
 
 This module provides functions for calculating electromagnetic torque using
-various formulations including flux linkage-based and expanded d-q methods.
+both flux linkage-based and expanded d-q parameter formulations.
 """
 
 

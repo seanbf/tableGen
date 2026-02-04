@@ -1,91 +1,36 @@
-"""PMAC lookup table generation using inverse distance weighting (IDW).
+"""Main coordinator for motor parameter table generation.
 
-This module generates 2D PMAC flux linkage lookup tables with d-axis current
-on the x-axis and q-axis current on the y-axis using IDW interpolation.
+This module coordinates the generation of various motor parameter lookup
+tables (flux maps, etc.) by leveraging generic interpolation utilities
+from the library.
 """
 
 import numpy as np
 import pandas as pd
 
-
-def interpolate_idw(
-    id_data: np.ndarray,
-    iq_data: np.ndarray,
-    psi_d_data: np.ndarray,
-    psi_q_data: np.ndarray,
-    id_target: float,
-    iq_target: float,
-    max_dist: float,
-) -> tuple:
-    """Perform inverse distance weighting (IDW) interpolation.
-
-    Uses weighted average of nearby points with weights inversely proportional
-    to distance. Similar to the calculate() function in the VB macro approach.
-
-    Args:
-        id_data: Array of measured d-axis currents.
-        iq_data: Array of measured q-axis currents.
-        psi_d_data: Array of measured d-axis flux linkages.
-        psi_q_data: Array of measured q-axis flux linkages.
-        id_target: Target d-axis current point for interpolation.
-        iq_target: Target q-axis current point for interpolation.
-        max_dist: Maximum distance threshold for including points.
-
-    Returns:
-        Tuple containing interpolated (psi_d, psi_q) values.
-    """
-    # Calculate distances from target point to all data points
-    distances = np.sqrt((id_data - id_target) ** 2 + (iq_data - iq_target) ** 2)
-
-    # Find points within max distance threshold
-    within_threshold = distances < max_dist
-
-    # If no points within threshold, use nearest point
-    if not np.any(within_threshold):
-        nearest_idx = np.argmin(distances)
-        return psi_d_data[nearest_idx], psi_q_data[nearest_idx]
-
-    # Get distances and values for points within threshold
-    dists_filtered = distances[within_threshold]
-    psi_d_filtered = psi_d_data[within_threshold]
-    psi_q_filtered = psi_q_data[within_threshold]
-
-    # Apply inverse distance weighting
-    # Protect against division by zero (exact match)
-    dists_filtered = np.where(dists_filtered < 0.001, 0.001, dists_filtered)
-
-    weights = 1.0 / dists_filtered
-    weight_sum = np.sum(weights)
-
-    # Calculate weighted average
-    psi_d = np.sum(psi_d_filtered * weights) / weight_sum
-    psi_q = np.sum(psi_q_filtered * weights) / weight_sum
-
-    return psi_d, psi_q
+from src.lib.utils import generate_2d_table, print_progress_indicator
 
 
-def generate_pmac_tables(
+def generate_flux_maps(
     processed_data: pd.DataFrame,
     motor_params: dict,
     table_params: dict,
     data_config: dict,
 ) -> dict:
-    """Generate 2D PMAC flux linkage lookup tables using IDW interpolation.
+    """Generate 2D flux linkage maps using generic IDW interpolation.
 
-    Generates two 2D lookup tables for flux linkages (psi_d and psi_q)
-    with d-axis current (id) on the x-axis and q-axis current (iq)
-    on the y-axis using inverse distance weighting interpolation.
+    This function coordinates the flux map generation process: preparing the
+    data, defining the grid resolution, and calling the generic table
+    generation engine from the library.
 
     Args:
-        processed_data: DataFrame containing processed motor data.
-        motor_params: Dictionary containing motor parameters (pole_pairs,
-                     rs_ohm).
-        table_params: Dictionary containing table generation parameters
-                     (size, max_current_a).
-        data_config: Dictionary containing column name configurations.
+        processed_data: DataFrame containing calculated motor parameters.
+        motor_params: Dictionary containing pole pairs and stator resistance.
+        table_params: Dictionary containing grid size and current range.
+        data_config: Dictionary containing column name mappings.
 
     Returns:
-        Dictionary containing interpolated matrices and grids.
+        Dictionary containing d-axis and q-axis flux tables and their grids.
     """
     input_cols = data_config["data"]["standard_names"]["input"]
     comp_cols = data_config["data"]["standard_names"]["computed"]
@@ -95,73 +40,42 @@ def generate_pmac_tables(
     assert table_params["size"] > 0, "Table size must be positive"
     assert table_params["max_current_a"] > 0, "Max current must be positive"
 
-    # Create current grids (matching VB macro behavior)
-    # Id: from 0 to -max_current_a (negative/decreasing)
-    # Iq: from 0 to +max_current_a (positive/increasing)
     size = table_params["size"]
     max_current = table_params["max_current_a"]
-    step = max_current / (size - 1)
 
+    # Create current grids
     id_grid = np.linspace(0, -max_current, size)
     iq_grid = np.linspace(0, max_current, size)
 
-    # Extract measurement data
-    id_data = processed_data[input_cols["id_apk"]].values
-    iq_data = processed_data[input_cols["iq_apk"]].values
-    psi_d_data = processed_data[comp_cols["psi_d_wb"]].values
-    psi_q_data = processed_data[comp_cols["psi_q_wb"]].values
+    # Prepare data for generic interpolation
+    coords = processed_data[[input_cols["id_apk"], input_cols["iq_apk"]]].values
+    values = processed_data[
+        [comp_cols["psi_d_wb"], comp_cols["psi_q_wb"]]
+    ].values
 
     # Calculate maximum distance for IDW interpolation
-    # Use a reasonable radius based on data spread
-    id_data_range = np.max(id_data) - np.min(id_data)
-    iq_data_range = np.max(iq_data) - np.min(iq_data)
+    id_data_range = np.max(coords[:, 0]) - np.min(coords[:, 0])
+    iq_data_range = np.max(coords[:, 1]) - np.min(coords[:, 1])
     max_dist = np.sqrt(id_data_range**2 + iq_data_range**2) / 2
 
     print(f"IDW Max Distance Threshold: {max_dist:.4f} A")
 
-    # Initialize output tables
-    psi_d_table = np.zeros((size, size))
-    psi_q_table = np.zeros((size, size))
+    # Use generic table generation engine from lib
+    flux_maps = generate_2d_table(
+        coords,
+        values,
+        id_grid,
+        iq_grid,
+        max_dist,
+        progress_callback=print_progress_indicator
+    )
 
-    # Perform IDW interpolation
-    # Loop through each grid point (matching VB macro loop structure)
-    for x in range(size):
-        id_target = id_grid[x]
-
-        for y in range(size):
-            iq_target = iq_grid[y]
-
-            # Calculate IDW interpolation for this point
-            psi_d, psi_q = interpolate_idw(
-                id_data,
-                iq_data,
-                psi_d_data,
-                psi_q_data,
-                id_target,
-                iq_target,
-                max_dist,
-            )
-
-            psi_d_table[y, x] = psi_d
-            psi_q_table[y, x] = psi_q
-
-        # Progress indicator
-        if (x + 1) % max(1, round(size / 10)) == 0:
-            progress = 100 * (x + 1) / size
-            print(f"  Progress: {progress:.0f}%")
+    # Extract individual tables
+    psi_d_table = flux_maps[:, :, 0]
+    psi_q_table = flux_maps[:, :, 1]
 
     # Create mesh grids
     id_matrix, iq_matrix = np.meshgrid(id_grid, iq_grid)
-
-    # Display summary
-    print("===== PMAC Tables Generated (IDW Interpolation) =====")
-    print(f"Table Size: {size}x{size}")
-    print(f"Id Range: 0 to -{max_current} A")
-    print(f"Iq Range: 0 to +{max_current} A")
-    print(f"Current Step: {step:.6f} A")
-    print(f"Psi_d Range: [{np.min(psi_d_table):.4f}, {np.max(psi_d_table):.4f}] Wb")
-    print(f"Psi_q Range: [{np.min(psi_q_table):.4f}, {np.max(psi_q_table):.4f}] Wb")
-    print("======================================================")
 
     return {
         "psi_d": psi_d_table,

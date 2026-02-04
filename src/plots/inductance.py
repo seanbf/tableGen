@@ -1,7 +1,7 @@
-"""Inductance mapping module.
+"""Inductance mapping visualization.
 
-This module provides a reusable function to create 3D Surface traces for inductance
-maps, including IDW/Griddata interpolation.
+This module provides functions to create 3D surface traces for inductance
+maps, interpolating calculated data for visualization.
 """
 
 import numpy as np

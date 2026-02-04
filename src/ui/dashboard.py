@@ -1,7 +1,7 @@
-"""Dashboard plotting module.
+"""Dashboard assembly for motor analysis.
 
-This module assembles the main dashboard using traces from sub-modules,
-including flux linkage and inductance surfaces.
+This module assembles the interactive dashboard, combining torque plots,
+flux linkage maps, and inductance maps into a single view.
 """
 import pandas as pd
 from plotly.subplots import make_subplots

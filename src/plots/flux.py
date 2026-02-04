@@ -1,7 +1,7 @@
-"""Flux mapping module.
+"""Flux linkage mapping visualization.
 
-This module provides a reusable function to create 3D Surface traces for flux
-linkage maps, including IDW/Griddata interpolation.
+This module provides functions to create 3D surface traces for flux linkage
+maps, interpolating measurement data for visualization.
 """
 
 import numpy as np
