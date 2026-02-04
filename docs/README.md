@@ -1,21 +1,25 @@
 # TableGen - PMAC Lookup Table Generation Tool
 
-A comprehensive tool for generating flux linkage lookup tables for Permanent Magnet AC (PMAC) motors using measured motor data and inverse distance weighting (IDW) interpolation.
+A comprehensive tool for generating flux linkage lookup tables (flux maps) for 
+synchronous motors using measured motor data and generic inverse distance 
+weighting (IDW) interpolation.
 
 ## Overview
 
-This tool orchestrates a complete motor analysis workflow that processes raw measurement data and generates 2D PMAC lookup tables (psi_d and psi_q) indexed by direct-axis (Id) and quadrature-axis (Iq) currents. These tables are essential for model-based motor control and simulation applications.
+This tool orchestrates a complete motor analysis workflow that processes raw 
+measurement data and generates 2D flux linkage maps (psi_d and psi_q) indexed 
+by direct-axis (Id) and quadrature-axis (Iq) currents. These tables are 
+essential for model-based motor control and simulation applications.
 
 ### Process Workflow
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#f0f0f0', 'primaryTextColor':'#333', 'primaryBorderColor':'#666', 'lineColor':'#999', 'secondBkgColor':'#e8e8e8', 'tertiaryColor':'#fff'}}}%%
 graph TD
     A["Load Configuration<br/><br/>config.yaml"] --> B["Load & Validate<br/>Measurement Data<br/><br/>CSV file"]
     B --> C["Get Motor<br/>Parameters<br/><br/>Pole Pairs, Rs"]
-    C --> D["Process Data &<br/>Calculate Parameters<br/><br/>Flux, Frequency, Torque"]
+    C --> D["Process Data &<br/>Calculate Parameters<br/><br/>Flux, Torque, Inductance"]
     D --> E["Get Table<br/>Parameters<br/><br/>Grid Size, Max Current"]
-    E --> F["Generate PMAC Tables<br/>using IDW<br/><br/>psi_d & psi_q matrices"]
+    E --> F["Generate Flux Maps<br/>using Generic IDW Engine<br/><br/>psi_d & psi_q matrices"]
     F --> G["Plot Results<br/><br/>Interactive Dashboard"]
     G --> H["Analysis Complete"]
 ```
@@ -24,34 +28,33 @@ graph TD
 
 A YAML configuration file is provided at `config/config.yaml`. Although sensible defaults are included, you may customize:
 
-- **Column name mappings**: Map your CSV headers to standard names
-- **Default parameter values**: Motor parameters, table grid size, maximum current
-- **Validation rules**: Min/max constraints for user inputs
+- **Column name mappings**: Map your CSV headers to standard names (e.g., `TimeStamp` → `time_s`)
+- **Default parameter values**: Motor parameters (`pole_pairs`, `rs_ohm`), table grid size (`size`), maximum current (`max_current_a`)
 
 Example configuration structure:
 ```yaml
+motor:
+  pole_pairs: 6
+  rs_ohm: 0.068
+
 data:
   column_names:
-    time: "Time"
-    speedMeasured: "Speed"
-    torqueMeasured: "Torque"
+    time: "TimeStamp"
+    torque_measured: "Torque"
+    speed_rpm: "Speed"
   standard_names:
-    time: "timeS"
-    speedMeasured: "speedRpm"
-    torqueMeasured: "torqueMeasuredNm"
-
-motor:
-  defaults:
-    polePairs: 4
-    statorResistance: 0.1
+    input:
+      time: "time_s"
+      torque_measured: "torque_measured_nm"
+      speed_rpm: "speed_rpm"
 ```
 
 ## Inputs
 
 ### Motor Parameters (User Prompted)
 
-- **Pole Pairs**: Number of pole pairs in the motor (typically 2-8)
-- **Stator Resistance (Rs)**: Stator winding resistance in Ohms
+- **Pole Pairs**: Number of pole pairs in the motor (typically 2-8, `pole_pairs`)
+- **Stator Resistance (Rs)**: Stator winding resistance in Ohms (`rs_ohm`)
 
 ### Measurement Data (CSV File)
 
@@ -66,15 +69,14 @@ Required columns in the input CSV:
 
 ### Table Generation Parameters (User Prompted)
 
-- **Grid Size**: Resolution of lookup tables (e.g., 21 = 21x21 matrix)
-- **Maximum Current**: Current range for table generation (Amps)
+- **Grid Size**: Resolution of lookup tables (e.g., 21 = 21x21 matrix, `size`)
+- **Maximum Current**: Current range for table generation (Amps, `max_current_a`)
 
 ## Processing Steps
 
 ### Step 1: Data Loading & Validation
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#f0f0f0', 'primaryTextColor':'#333', 'primaryBorderColor':'#666', 'lineColor':'#999', 'secondBkgColor':'#e8e8e8', 'tertiaryColor':'#fff'}}}%%
 graph LR
     CSV["Raw CSV Data"] --> LOAD["Load File"]
     LOAD --> SELECT["Select Relevant Columns"]
@@ -91,15 +93,16 @@ User is prompted to enter motor-specific parameters with configurable defaults s
 ### Step 3: Data Processing & Parameter Calculation
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#f0f0f0', 'primaryTextColor':'#333', 'primaryBorderColor':'#666', 'lineColor':'#999', 'secondBkgColor':'#e8e8e8', 'tertiaryColor':'#fff'}}}%%
 graph TD
     RAW["Raw Data<br/>Speed, Current, Voltage"] --> FREQ["Electrical Frequency<br/>ωe = ωm × P × 2π/60"]
     RAW --> FLUX["Flux Linkage Calculations<br/>λd = -(Rs×Iq - Vq)/ωe<br/>λq = (Rs×Id - Vd)/ωe"]
     RAW --> TRQ["Electromagnetic Torque<br/>T = 1.5×P×(λd×Iq - λq×Id)"]
+    RAW --> IND["Inductance Calculations<br/>Ld = (λd - λpm)/Id<br/>Lq = λq/Iq"]
     FREQ --> RMS["RMS Conversions<br/>Arms = Apeak/√2<br/>Vrms = Vpeak/√2"]
     
     FLUX --> OUT["Processed DataFrame<br/>with all calculations"]
     TRQ --> OUT
+    IND --> OUT
     RMS --> OUT
 ```
 
@@ -107,9 +110,10 @@ Additional electrical parameters are calculated:
 - **Electrical Frequency**: From mechanical speed and pole pairs
 - **Flux Linkages**: Using dq-reference frame voltage equations
 - **Electromagnetic Torque**: From flux linkages and currents
+- **Inductances**: D-axis (Ld) and Q-axis (Lq) inductances
 - **RMS Values**: Converted from peak measurement values
 
-### Step 4: PMAC Table Generation
+### Step 4: Flux Map Generation
 
 A 2D lookup table is generated with:
 - **X-axis**: Direct-axis current (Id) from 0 to max current
@@ -127,6 +131,8 @@ An interactive Plotly dashboard is displayed (single browser window) containing:
 - **Torque Comparison**: Electromagnetic vs Measured torque (Unified Hover)
 - **Flux D-Axis Surface**: 3D Surface map with projected contours (Viridis)
 - **Flux Q-Axis Surface**: 3D Surface map with projected contours (Viridis)
+- **Inductance D-Axis Surface**: 3D Surface map for Ld (Viridis)
+- **Inductance Q-Axis Surface**: 3D Surface map for Lq (Viridis)
  
 This validates the accuracy of the calculated electrical parameters and visualizes the flux linkage maps.
 
@@ -173,22 +179,27 @@ tableGen/
 │   ├── data_processor.py      # Data processing & calculations
 │   ├── motor_parameters.py    # Motor parameter input
 │   ├── table_parameters.py    # Table generation parameter input
-│   ├── table_generator.py     # PMAC table generation via IDW
+│   ├── table_generator.py     # Flux map coordination
+│   ├── lib/                   # Refactored calculation library
+│   │   ├── calculations/      # Core electrical math
+│   │   │   ├── flux.py
+│   │   │   ├── frequency.py
+│   │   │   ├── inductance.py
+│   │   │   ├── torque.py
+│   │   │   ├── power.py
+│   │   │   └── transformations.py
+│   │   ├── conversions/       # Unit conversions
+│   │   │   ├── speed.py
+│   │   │   └── waveform.py
+│   │   └── utils/             # Implementation utilities
+│   │       ├── interpolation.py
+│   │       └── table_generation.py
 │   ├── plots/                 # Trace generation logic
 │   │   ├── torque.py
-│   │   └── flux.py
-│   ├── ui/                    # Dashboard UI
-│   │   └── dashboard.py
-│   └── lib/
-│       ├── calculations/      # Electrical calculations
-│       │   ├── flux.py
-│       │   ├── frequency.py
-│       │   ├── torque.py
-│       │   ├── power.py
-│       │   └── transformations.py
-│       └── conversions/       # Unit conversions
-│           ├── speed.py
-│           └── waveform.py
+│   │   ├── flux.py
+│   │   └── inductance.py
+│   └── ui/                    # Dashboard UI
+│       └── dashboard.py
 ├── docs/
 │   ├── README.md              # This file
 │   └── GUIDELINES.md          # Development guidelines
@@ -221,6 +232,16 @@ Where:
 - $T_e$ = Electromagnetic torque (Nm)
 - $P$ = Number of pole pairs
 - $I_d$, $I_q$ = Direct and quadrature currents (A)
+
+### Inductance Calculation
+
+$$L_d = \frac{\lambda_d - \lambda_{pm}}{I_d}$$
+
+$$L_q = \frac{\lambda_q}{I_q}$$
+
+Where:
+- $L_d$, $L_q$ = Direct and quadrature inductances (H)
+- $\lambda_{pm}$ = Permanent magnet flux linkage (Wb-turns)
 
 ### Inverse Distance Weighting Interpolation
 
