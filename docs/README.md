@@ -31,11 +31,11 @@ A YAML configuration file is provided at `config/config.yaml`. Although sensible
 Example configuration structure:
 ```yaml
 data:
-  columnNames:
+  column_names:
     time: "Time"
     speedMeasured: "Speed"
     torqueMeasured: "Torque"
-  standardNames:
+  standard_names:
     time: "timeS"
     speedMeasured: "speedRpm"
     torqueMeasured: "torqueMeasuredNm"

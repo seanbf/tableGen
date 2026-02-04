@@ -87,8 +87,8 @@ def generate_pmac_tables(
     Returns:
         Dictionary containing interpolated matrices and grids.
     """
-    input_cols = data_config["data"]["standardNames"]["input"]
-    comp_cols = data_config["data"]["standardNames"]["computed"]
+    input_cols = data_config["data"]["standard_names"]["input"]
+    comp_cols = data_config["data"]["standard_names"]["computed"]
 
     # Validate inputs
     assert isinstance(table_params["size"], int), "Table size must be integer"

@@ -24,10 +24,10 @@ def get_table_parameters(table_config: dict) -> dict:
         table_params = get_table_parameters(table_config)
         print(f"Table size: {table_params['size']}")
     """
-    defaults = table_config["table"]["defaults"]
+    table_params = table_config["table"]
 
     # Prompt user for table size
-    default_size = defaults["size"]
+    default_size = table_params["size"]
     user_input = input(f"Enter Table Size [{default_size}]: ")
 
     if user_input.strip():
@@ -40,7 +40,7 @@ def get_table_parameters(table_config: dict) -> dict:
         size = default_size
 
     # Prompt user for maximum current
-    default_max_current = defaults["max_current_a"]
+    default_max_current = table_params["max_current_a"]
     user_input = input(
         f"Enter Maximum Current for Table Generation (A) [{default_max_current}]: "
     )

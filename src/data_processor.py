@@ -1,7 +1,8 @@
 """Data processing module for motor analysis.
 
 This module provides functions for processing raw motor data and calculating
-additional electrical parameters including flux linkages and electromagnetic torque.
+additional electrical parameters including flux linkages, inductances,
+and electromagnetic torque.
 """
 
 import pandas as pd
@@ -11,6 +12,10 @@ from src.lib.calculations.flux import (
     flux_linkage_q_voltage,
 )
 from src.lib.calculations.frequency import electrical_frequency
+from src.lib.calculations.inductance import (
+    inductance_d,
+    inductance_q,
+)
 from src.lib.calculations.torque import torque_flux
 from src.lib.conversions.waveform import peak_to_rms
 
@@ -37,8 +42,8 @@ def process_data(
     stator_resistance = motor_params["actual"]["rs_ohm"]
 
     # Extract column names from config
-    input_cols = data_config["data"]["standardNames"]["input"]
-    comp_cols = data_config["data"]["standardNames"]["computed"]
+    input_cols = data_config["data"]["standard_names"]["input"]
+    comp_cols = data_config["data"]["standard_names"]["computed"]
 
     # Calculate electrical frequency
     processed_data[comp_cols["omega_e_rads"]] = processed_data[
@@ -74,6 +79,26 @@ def process_data(
             row[input_cols["iq_apk"]],
             row[input_cols["id_apk"]],
             pole_pairs,
+        ),
+        axis=1,
+    )
+
+    # Calculate inductances
+    # Note: We need psi_pm for Ld calculation. Assuming psi_wb from config/motor_params is the PM flux.
+    psi_pm = motor_params["actual"]["psi_wb"]
+    processed_data[comp_cols["ld_h"]] = processed_data.apply(
+        lambda row: inductance_d(
+            row[comp_cols["psi_d_wb"]],
+            row[input_cols["id_apk"]],
+            psi_pm,
+        ),
+        axis=1,
+    )
+
+    processed_data[comp_cols["lq_h"]] = processed_data.apply(
+        lambda row: inductance_q(
+            row[comp_cols["psi_q_wb"]],
+            row[input_cols["iq_apk"]],
         ),
         axis=1,
     )

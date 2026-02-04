@@ -53,8 +53,8 @@ def load_test_data(
         return data_table, success_flag
 
     # Extract column name mappings
-    col = data_config["data"]["columnNames"]
-    std_names = data_config["data"]["standardNames"]
+    col = data_config["data"]["column_names"]
+    std_names = data_config["data"]["standard_names"]
 
     # Select only relevant columns
     selected_cols = [

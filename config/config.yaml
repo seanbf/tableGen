@@ -3,10 +3,9 @@
 # Used throughout the motor analysis and table generation workflow
 
 # Data Processing Configuration
-# Column name mappings and data processing settings
 data:
-  columnNames:
-    # Raw CSV column name mappings to standardized internal names
+  column_names:
+    # Raw CSV column name mappings to standardised internal names
     time: 'TimeStamp'
     torque_measured: 'Torque'
     speed_rpm: 'Speed'
@@ -15,8 +14,8 @@ data:
     iq_apk: 'IqReq'
     id_apk: 'WeakenedId'
   
-  standardNames:
-    # Standardized column names used throughout calculations and plots
+  standard_names:
+    # Standardised column names used throughout calculations and plots
     input:
       time: 'time_s'
       torque_measured: 'torque_measured_nm'
@@ -35,32 +34,16 @@ data:
       iq_arms: 'iq_arms'
       ud_vrms: 'ud_vrms'
       uq_vrms: 'uq_vrms'
+      ld_h: 'ld_h'
+      lq_h: 'lq_h'
 
 # Motor-Specific Configuration
-# Motor parameter defaults and validation rules
 motor:
-  validation:
-    # Minimum valid values for motor parameters
-    min_pole_pairs: 1                   # Minimum pole pairs
-    min_rs_ohm: 0.001                  # Minimum stator resistance (Ohms)
-    min_psi_wb: 0.001                  # Minimum flux linkage (Wb)
-  
-  defaults:
-    # Default values for common motor types (3-phase motors)
-    pole_pairs: 6                       # Common for many motors
-    rs_ohm: 0.068                      # Typical value (Ohms) for medium motors
-    psi_wb: 0.05                       # Typical value (Wb) for PM motors
+  pole_pairs: 6                       # Pole pairs, not poles.
+  ke_v_krpm: 134.0                    # Back EMF constant (V_rms,LL / krpm)
+  rs_ohm: 0.068                       # Stator resistance (Ohms)
 
 # Table Generation Configuration
-# Table parameter defaults and validation rules
 table:
-  defaults:
-    # Default values for table generation
-    size: 20                           # Common default table size (rows)
-    max_current_a: 200.0               # Typical maximum current (Amps)
-  
-  validation:
-    # Validation ranges for table parameters
-    min_size: 10                       # Minimum table size (rows)
-    min_max_current_a: 50.0            # Minimum valid maximum current (A)
-    max_max_current_a: 200.0           # Maximum valid maximum current (A)
+  size: 20                           # Table size (rows)
+  max_current_a: 200.0               # Maximum current (Amps)
