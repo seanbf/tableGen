@@ -68,9 +68,9 @@ def process_data(raw_data: pd.DataFrame, motor_params: dict) -> pd.DataFrame:
     stator_resistance = motor_params["actual"]["statorResistance"]
 
     # Calculate electrical frequency
-    processed_data["electricalFrequencyRads"] = processed_data[
-        "speedRpm"
-    ].apply(lambda speed: calculate_electrical_frequency(speed, pole_pairs))
+    processed_data["electricalFrequencyRads"] = processed_data["speedRpm"].apply(
+        lambda speed: calculate_electrical_frequency(speed, pole_pairs)
+    )
 
     # Calculate flux linkages using voltage equation
     processed_data["fluxLinkageDAxisWb"] = processed_data.apply(
@@ -106,18 +106,18 @@ def process_data(raw_data: pd.DataFrame, motor_params: dict) -> pd.DataFrame:
     )
 
     # Calculate RMS values from peak values
-    processed_data["currentDAxisArms"] = processed_data[
-        "currentDAxisApeak"
-    ].apply(peak_to_rms)
-    processed_data["currentQAxisArms"] = processed_data[
-        "currentQAxisApeak"
-    ].apply(peak_to_rms)
-    processed_data["voltageDAxisVrms"] = processed_data[
-        "voltageDAxisVpeak"
-    ].apply(peak_to_rms)
-    processed_data["voltageQAxisVrms"] = processed_data[
-        "voltageQAxisVpeak"
-    ].apply(peak_to_rms)
+    processed_data["currentDAxisArms"] = processed_data["currentDAxisApeak"].apply(
+        peak_to_rms
+    )
+    processed_data["currentQAxisArms"] = processed_data["currentQAxisApeak"].apply(
+        peak_to_rms
+    )
+    processed_data["voltageDAxisVrms"] = processed_data["voltageDAxisVpeak"].apply(
+        peak_to_rms
+    )
+    processed_data["voltageQAxisVrms"] = processed_data["voltageQAxisVpeak"].apply(
+        peak_to_rms
+    )
 
     # Display first few rows of processed data
     print("Processed data head:")

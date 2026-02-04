@@ -11,9 +11,9 @@ from src.config_loader import load_config
 from src.data_loader import load_test_data
 from src.data_processor import process_data
 from src.motor_parameters import get_motor_parameters
-from src.plotting import plot_results
 from src.table_generator import generate_pmac_tables
 from src.table_parameters import get_table_parameters
+from src.ui import plot_results
 
 
 def main() -> None:
@@ -26,7 +26,7 @@ def main() -> None:
     3. Process raw data and calculate electrical parameters
     4a. Get table generation parameters from user input
     4b. Generate PMAC lookup tables using IDW interpolation
-    5. Plot results
+    5. Plot results (Interactive Dashboard)
 
     Exits with status code 1 if any step fails.
     """

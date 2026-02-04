@@ -51,8 +51,7 @@ def get_table_parameters(table_config: dict) -> dict:
         except ValueError:
             max_current = default_max_current
             print(
-                f"Invalid input. Using default maximum current: "
-                f"{default_max_current} A"
+                f"Invalid input. Using default maximum current: {default_max_current} A"
             )
     else:
         max_current = default_max_current

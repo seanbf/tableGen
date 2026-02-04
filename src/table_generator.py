@@ -52,9 +52,7 @@ def interpolate_idw(
 
     # Apply inverse distance weighting
     # Protect against division by zero (exact match)
-    dists_filtered = np.where(
-        dists_filtered < 0.001, 0.001, dists_filtered
-    )
+    dists_filtered = np.where(dists_filtered < 0.001, 0.001, dists_filtered)
 
     weights = 1.0 / dists_filtered
     weight_sum = np.sum(weights)

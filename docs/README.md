@@ -16,7 +16,7 @@ graph TD
     C --> D["Process Data &<br/>Calculate Parameters<br/><br/>Flux, Frequency, Torque"]
     D --> E["Get Table<br/>Parameters<br/><br/>Grid Size, Max Current"]
     E --> F["Generate PMAC Tables<br/>using IDW<br/><br/>psi_d & psi_q matrices"]
-    F --> G["Plot Results<br/><br/>Torque Comparison"]
+    F --> G["Plot Results<br/><br/>Interactive Dashboard"]
     G --> H["Analysis Complete"]
 ```
 
@@ -121,13 +121,14 @@ A 2D lookup table is generated with:
 - If no points exist within threshold, the nearest point is used
 - Provides smooth, physically reasonable flux linkage curves
 
-### Step 5: Results Visualization
-
-Plots are generated comparing:
-- Electromagnetic torque (calculated)
-- Measured torque (from raw data)
-
-This validates the accuracy of the calculated electrical parameters.
+### Step 5: Results Visualization (Interactive Dashboard)
+ 
+An interactive Plotly dashboard is displayed (single browser window) containing:
+- **Torque Comparison**: Electromagnetic vs Measured torque (Unified Hover)
+- **Flux D-Axis Surface**: 3D Surface map with projected contours (Viridis)
+- **Flux Q-Axis Surface**: 3D Surface map with projected contours (Viridis)
+ 
+This validates the accuracy of the calculated electrical parameters and visualizes the flux linkage maps.
 
 ## Installation & Usage
 
@@ -173,7 +174,11 @@ tableGen/
 │   ├── motor_parameters.py    # Motor parameter input
 │   ├── table_parameters.py    # Table generation parameter input
 │   ├── table_generator.py     # PMAC table generation via IDW
-│   ├── plotting.py            # Result visualization
+│   ├── plots/                 # Trace generation logic
+│   │   ├── torque.py
+│   │   └── flux.py
+│   ├── ui/                    # Dashboard UI
+│   │   └── dashboard.py
 │   └── lib/
 │       ├── calculations/      # Electrical calculations
 │       │   ├── flux.py

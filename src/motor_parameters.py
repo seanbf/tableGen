@@ -5,7 +5,6 @@ with configurable defaults and validation rules.
 """
 
 
-
 def get_motor_parameters(motor_config: dict) -> dict:
     """Get motor parameters from user input with defaults.
 
@@ -32,9 +31,7 @@ def get_motor_parameters(motor_config: dict) -> dict:
     user_input = input(
         f"Enter number of pole pairs [{default_pole_pairs} Pole Pairs]: "
     )
-    pole_pairs = (
-        int(user_input) if user_input.strip() else default_pole_pairs
-    )
+    pole_pairs = int(user_input) if user_input.strip() else default_pole_pairs
 
     # Prompt user for stator resistance
     default_stator_resistance = defaults["statorResistance"]
