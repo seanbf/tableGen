@@ -59,33 +59,38 @@ def load_test_data(
     # Select only relevant columns
     selected_cols = [
         col["time"],
-        col["torqueMeasured"],
-        col["speedMeasured"],
-        col["voltageQAxis"],
-        col["voltageDAxis"],
-        col["currentQAxis"],
-        col["currentDAxis"],
+        col["torque_measured"],
+        col["speed_rpm"],
+        col["uq_vpk"],
+        col["ud_vpk"],
+        col["iq_apk"],
+        col["id_apk"],
     ]
+
+    # Selection and Renaming
+    rename_mapping = {
+        col["time"]: std_names["input"]["time"],
+        col["speed_rpm"]: std_names["input"]["speed_rpm"],
+        col["torque_measured"]: std_names["input"]["torque_measured"],
+        col["uq_vpk"]: std_names["input"]["uq_vpk"],
+        col["ud_vpk"]: std_names["input"]["ud_vpk"],
+        col["iq_apk"]: std_names["input"]["iq_apk"],
+        col["id_apk"]: std_names["input"]["id_apk"],
+    }
 
     try:
         data_table = data_table[selected_cols]
-
-        # Rename columns with descriptive names using standard notation
-        rename_mapping = {
-            col["time"]: std_names["time"],
-            col["speedMeasured"]: std_names["speedMeasured"],
-            col["torqueMeasured"]: std_names["torqueMeasured"],
-            col["voltageQAxis"]: std_names["voltageQAxis"],
-            col["voltageDAxis"]: std_names["voltageDAxis"],
-            col["currentQAxis"]: std_names["currentQAxis"],
-            col["currentDAxis"]: std_names["currentDAxis"],
-        }
-
         data_table = data_table.rename(columns=rename_mapping)
-        print("Selected and renamed relevant columns successfully")
+
+        # Initialize computed columns with NaN for completeness
+        for col_name in std_names["computed"].values():
+            if col_name not in data_table.columns:
+                data_table[col_name] = float("nan")
+
+        print("Selected, renamed, and initialized schema successfully")
 
     except KeyError as e:
-        print(f"Error selecting columns: {e}")
+        print(f"Error selecting/renaming columns: {e}")
         data_table = None
         success_flag = False
         return data_table, success_flag

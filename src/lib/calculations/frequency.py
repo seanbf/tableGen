@@ -4,7 +4,7 @@ This module provides functions for converting between mechanical speed (RPM)
 and electrical frequency (Hz, rad/s), accounting for motor pole pairs.
 """
 
-import math
+from src.lib.conversions.speed import rpm_to_rads
 
 
 def electrical_frequency(
@@ -25,7 +25,7 @@ def electrical_frequency(
     Formula:
         f_elec = (mechanical_speed * pole_pairs) * (2π/60)
     """
-    return abs(mechanical_speed_rpm) * pole_pairs * (2 * math.pi / 60)
+    return rpm_to_rads(abs(mechanical_speed_rpm)) * pole_pairs
 
 
 def synchronous_speed(

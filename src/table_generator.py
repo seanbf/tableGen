@@ -65,58 +65,51 @@ def interpolate_idw(
 
 
 def generate_pmac_tables(
-    processed_data: pd.DataFrame, motor_params: dict, table_params: dict
+    processed_data: pd.DataFrame,
+    motor_params: dict,
+    table_params: dict,
+    data_config: dict,
 ) -> dict:
     """Generate 2D PMAC flux linkage lookup tables using IDW interpolation.
 
     Generates two 2D lookup tables for flux linkages (psi_d and psi_q)
-    with d-axis current (Id) on the x-axis and q-axis current (Iq)
+    with d-axis current (id) on the x-axis and q-axis current (iq)
     on the y-axis using inverse distance weighting interpolation.
 
     Args:
-        processed_data: DataFrame containing processed motor data with flux
-                       linkage values (fluxLinkageDAxisWb,
-                       fluxLinkageQAxisWb, currentDAxisApeak,
-                       currentQAxisApeak).
-        motor_params: Dictionary containing motor parameters (polePairs,
-                     statorResistance).
+        processed_data: DataFrame containing processed motor data.
+        motor_params: Dictionary containing motor parameters (pole_pairs,
+                     rs_ohm).
         table_params: Dictionary containing table generation parameters
-                     (size - grid resolution, maxCurrent - maximum current).
+                     (size, max_current_a).
+        data_config: Dictionary containing column name configurations.
 
     Returns:
-        Dictionary containing:
-            - psi_d: 2D matrix of d-axis flux linkage (rows: Iq, cols: Id)
-            - psi_q: 2D matrix of q-axis flux linkage (rows: Iq, cols: Id)
-            - id_grid: Vector of d-axis current values (x-axis)
-            - iq_grid: Vector of q-axis current values (y-axis)
-            - id_matrix: 2D matrix of Id values
-            - iq_matrix: 2D matrix of Iq values
-
-    Example:
-        table_params = {'size': 21, 'maxCurrent': 100}
-        table_data = generate_pmac_tables(processed_data, motor_params,
-                                        table_params)
+        Dictionary containing interpolated matrices and grids.
     """
+    input_cols = data_config["data"]["standardNames"]["input"]
+    comp_cols = data_config["data"]["standardNames"]["computed"]
+
     # Validate inputs
     assert isinstance(table_params["size"], int), "Table size must be integer"
     assert table_params["size"] > 0, "Table size must be positive"
-    assert table_params["maxCurrent"] > 0, "Max current must be positive"
+    assert table_params["max_current_a"] > 0, "Max current must be positive"
 
     # Create current grids (matching VB macro behavior)
-    # Id: from 0 to -maxCurrent (negative/decreasing)
-    # Iq: from 0 to +maxCurrent (positive/increasing)
+    # Id: from 0 to -max_current_a (negative/decreasing)
+    # Iq: from 0 to +max_current_a (positive/increasing)
     size = table_params["size"]
-    max_current = table_params["maxCurrent"]
+    max_current = table_params["max_current_a"]
     step = max_current / (size - 1)
 
     id_grid = np.linspace(0, -max_current, size)
     iq_grid = np.linspace(0, max_current, size)
 
-    # Extract measurement data (convert DataFrame columns to arrays)
-    id_data = processed_data["currentDAxisApeak"].values
-    iq_data = processed_data["currentQAxisApeak"].values
-    psi_d_data = processed_data["fluxLinkageDAxisWb"].values
-    psi_q_data = processed_data["fluxLinkageQAxisWb"].values
+    # Extract measurement data
+    id_data = processed_data[input_cols["id_apk"]].values
+    iq_data = processed_data[input_cols["iq_apk"]].values
+    psi_d_data = processed_data[comp_cols["psi_d_wb"]].values
+    psi_q_data = processed_data[comp_cols["psi_q_wb"]].values
 
     # Calculate maximum distance for IDW interpolation
     # Use a reasonable radius based on data spread

@@ -8,12 +8,12 @@ Submodules:
     - speed: Rotational speed conversions (RPM, rad/s)
 """
 
-from src.lib.conversions.speed import rads2rpm, rpm2rads
-from src.lib.conversions.waveform import peak2rms, rms2peak
+from src.lib.conversions.speed import rads_to_rpm, rpm_to_rads
+from src.lib.conversions.waveform import peak_to_rms, rms_to_peak
 
 __all__ = [
-    "peak2rms",
-    "rms2peak",
-    "rpm2rads",
-    "rads2rpm",
+    "peak_to_rms",
+    "rms_to_peak",
+    "rpm_to_rads",
+    "rads_to_rpm",
 ]

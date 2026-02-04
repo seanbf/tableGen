@@ -17,24 +17,24 @@ def get_motor_parameters(motor_config: dict) -> dict:
 
     Returns:
         Dictionary containing motor parameters with:
-            - polePairs: Number of pole pairs in the motor
-            - statorResistance: Stator resistance in Ohms
+            - pole_pairs: Number of pole pairs in the motor
+            - rs_ohm: Stator resistance in Ohms
 
     Example:
         motor_params = get_motor_parameters(motor_config)
-        print(f"Pole pairs: {motor_params['polePairs']}")
+        print(f"Pole pairs: {motor_params['pole_pairs']}")
     """
     defaults = motor_config["motor"]["defaults"]
 
     # Prompt user for pole pairs
-    default_pole_pairs = defaults["polePairs"]
+    default_pole_pairs = defaults["pole_pairs"]
     user_input = input(
         f"Enter number of pole pairs [{default_pole_pairs} Pole Pairs]: "
     )
     pole_pairs = int(user_input) if user_input.strip() else default_pole_pairs
 
     # Prompt user for stator resistance
-    default_stator_resistance = defaults["statorResistance"]
+    default_stator_resistance = defaults["rs_ohm"]
     user_input = input(
         f"Enter stator resistance in Ohms [{default_stator_resistance} Ohms]: "
     )
@@ -48,7 +48,7 @@ def get_motor_parameters(motor_config: dict) -> dict:
 
     return {
         "actual": {
-            "polePairs": pole_pairs,
-            "statorResistance": stator_resistance,
+            "pole_pairs": pole_pairs,
+            "rs_ohm": stator_resistance,
         }
     }

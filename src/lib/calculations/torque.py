@@ -6,60 +6,50 @@ various formulations including flux linkage-based and expanded d-q methods.
 
 
 def torque_flux(
-    flux_linkage_d_axis_wb: float, flux_linkage_q_axis_wb: float,
-    current_q_axis_a: float, current_d_axis_a: float, pole_pairs: int
+    psi_d: float, psi_q: float, i_q: float, i_d: float, pole_pairs: int
 ) -> float:
     """Calculate electromagnetic torque using flux linkage and current.
 
     Calculates the electromagnetic torque using the standard formula:
-    T = (3/2) * P * (λd * iq - λq * id)
+    T = (3/2) * P * (ψd * iq - ψq * id)
 
     Args:
-        flux_linkage_d_axis_wb: D-axis flux linkage in Weber-turns.
-        flux_linkage_q_axis_wb: Q-axis flux linkage in Weber-turns.
-        current_q_axis_a: Q-axis current in Amperes.
-        current_d_axis_a: D-axis current in Amperes.
+        psi_d: D-axis flux linkage in Weber-turns.
+        psi_q: Q-axis flux linkage in Weber-turns.
+        i_q: Q-axis current in Amperes.
+        i_d: D-axis current in Amperes.
         pole_pairs: Number of pole pairs.
 
     Returns:
         Electromagnetic torque in Newton-meters (Nm).
 
     Formula:
-        T = (3/2) * P * (λd * Iq - λq * Id)
+        T = (3/2) * P * (ψd * iq - ψq * id)
     """
-    return (3/2) * pole_pairs * (
-        flux_linkage_d_axis_wb * current_q_axis_a -
-        flux_linkage_q_axis_wb * current_d_axis_a
-    )
+    return (3/2) * pole_pairs * (psi_d * i_q - psi_q * i_d)
 
 
 def torque_idq(
-    pole_pairs: int, flux_linkage_wb: float,
-    d_axis_inductance_h: float, q_axis_inductance_h: float,
-    current_d_axis_a: float, current_q_axis_a: float
+    pole_pairs: int, psi_pm: float, ld: float, lq: float, i_d: float, i_q: float
 ) -> float:
     """Calculate electromagnetic torque using expanded torque equation.
 
     Calculates the electromagnetic torque for PMAC motors using the
     expanded torque equation:
-    Te = (3/2) * p * (λ * Iq + (Ld - Lq) * Id * Iq)
+    Te = (3/2) * p * (ψ * iq + (Ld - Lq) * id * iq)
 
     Args:
         pole_pairs: Number of pole pairs.
-        flux_linkage_wb: Flux linkage in Weber-turns.
-        d_axis_inductance_h: D-axis inductance in Henries.
-        q_axis_inductance_h: Q-axis inductance in Henries.
-        current_d_axis_a: D-axis current in Amperes.
-        current_q_axis_a: Q-axis current in Amperes.
+        psi_pm: Permanent magnet flux linkage in Weber-turns.
+        ld: D-axis inductance in Henries.
+        lq: Q-axis inductance in Henries.
+        i_d: D-axis current in Amperes.
+        i_q: Q-axis current in Amperes.
 
     Returns:
         Electromagnetic torque in Newton-meters (Nm).
 
     Formula:
-        Te = (3/2) * p * (λ * Iq + (Ld - Lq) * Id * Iq)
+        Te = (3/2) * p * (ψ * iq + (Ld - Lq) * id * iq)
     """
-    return (3/2) * pole_pairs * (
-        flux_linkage_wb * current_q_axis_a +
-        (d_axis_inductance_h - q_axis_inductance_h) *
-        current_d_axis_a * current_q_axis_a
-    )
+    return (3/2) * pole_pairs * (psi_pm * i_q + (ld - lq) * i_d * i_q)

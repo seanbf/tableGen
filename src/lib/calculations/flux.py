@@ -5,45 +5,44 @@ reference frames, both from inductance and current, and from voltage equations.
 """
 
 
-def flux_linkage_d(d_axis_current: float, inductance_d: float) -> float:
+def flux_linkage_d(i_d: float, ld: float) -> float:
     """Calculate d-axis flux linkage.
 
     Calculates the d-axis flux linkage from d-axis current and inductance.
 
     Args:
-        d_axis_current: D-axis current in Amperes.
-        inductance_d: D-axis inductance in Henries.
+        i_d: D-axis current in Amperes.
+        ld: D-axis inductance in Henries.
 
     Returns:
         D-axis flux linkage in Weber-turns.
 
     Formula:
-        λd = Ld * Id
+        ψd = Ld * id
     """
-    return inductance_d * d_axis_current
+    return ld * i_d
 
 
-def flux_linkage_q(q_axis_current: float, inductance_q: float) -> float:
+def flux_linkage_q(i_q: float, lq: float) -> float:
     """Calculate q-axis flux linkage.
 
     Calculates the q-axis flux linkage from q-axis current and inductance.
 
     Args:
-        q_axis_current: Q-axis current in Amperes.
-        inductance_q: Q-axis inductance in Henries.
+        i_q: Q-axis current in Amperes.
+        lq: Q-axis inductance in Henries.
 
     Returns:
         Q-axis flux linkage in Weber-turns.
 
     Formula:
-        λq = Lq * Iq
+        ψq = Lq * iq
     """
-    return inductance_q * q_axis_current
+    return lq * i_q
 
 
 def flux_linkage_d_voltage(
-    voltage_q_axis: float, current_q_axis: float,
-    electrical_frequency_rads: float, stator_resistance: float
+    u_q: float, i_q: float, omega_e: float, rs: float
 ) -> float:
     """Calculate d-axis flux linkage using voltage equation.
 
@@ -52,24 +51,22 @@ def flux_linkage_d_voltage(
     This represents the coupling between d and q axes.
 
     Args:
-        voltage_q_axis: Q-axis voltage in Volts.
-        current_q_axis: Q-axis current in Amperes.
-        electrical_frequency_rads: Electrical frequency in rad/s.
-        stator_resistance: Stator resistance in Ohms.
+        u_q: Q-axis voltage in Volts.
+        i_q: Q-axis current in Amperes.
+        omega_e: Electrical frequency in rad/s.
+        rs: Stator resistance in Ohms.
 
     Returns:
         D-axis flux linkage in Weber-turns.
 
     Formula:
-        λd = -((Rs * Iq) - Vq) / ωe
+        ψd = -((Rs * iq) - uq) / ωe
     """
-    return -1 * ((stator_resistance * current_q_axis) - voltage_q_axis) / \
-           electrical_frequency_rads
+    return -1 * ((rs * i_q) - u_q) / omega_e
 
 
 def flux_linkage_q_voltage(
-    voltage_d_axis: float, current_d_axis: float,
-    electrical_frequency_rads: float, stator_resistance: float
+    u_d: float, i_d: float, omega_e: float, rs: float
 ) -> float:
     """Calculate q-axis flux linkage using voltage equation.
 
@@ -78,16 +75,15 @@ def flux_linkage_q_voltage(
     This represents the coupling between q and d axes.
 
     Args:
-        voltage_d_axis: D-axis voltage in Volts.
-        current_d_axis: D-axis current in Amperes.
-        electrical_frequency_rads: Electrical frequency in rad/s.
-        stator_resistance: Stator resistance in Ohms.
+        u_d: D-axis voltage in Volts.
+        i_d: D-axis current in Amperes.
+        omega_e: Electrical frequency in rad/s.
+        rs: Stator resistance in Ohms.
 
     Returns:
         Q-axis flux linkage in Weber-turns.
 
     Formula:
-        λq = ((Rs * Id) - Vd) / ωe
+        ψq = ((Rs * id) - ud) / ωe
     """
-    return ((stator_resistance * current_d_axis) - voltage_d_axis) / \
-           electrical_frequency_rads
+    return ((rs * i_d) - u_d) / omega_e

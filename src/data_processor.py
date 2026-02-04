@@ -12,112 +12,85 @@ from src.lib.calculations.flux import (
 )
 from src.lib.calculations.frequency import electrical_frequency
 from src.lib.calculations.torque import torque_flux
+from src.lib.conversions.waveform import peak_to_rms
 
 
-def peak_to_rms(peak_value: float) -> float:
-    """Convert peak value to RMS value.
-
-    Converts a peak value to its RMS equivalent using the standard
-    relationship for sinusoidal waveforms.
-
-    Args:
-        peak_value: Peak value of the signal.
-
-    Returns:
-        RMS value (peak_value / sqrt(2))
-
-    Formula:
-        RMS = Peak / √2
-    """
-    import math
-
-    return peak_value / math.sqrt(2)
-
-
-def process_data(raw_data: pd.DataFrame, motor_params: dict) -> pd.DataFrame:
+def process_data(
+    raw_data: pd.DataFrame, motor_params: dict, data_config: dict
+) -> pd.DataFrame:
     """Process raw motor data and calculate additional parameters.
 
-    Takes raw data table and motor parameters, processes the data,
-    and calculates additional electrical parameters including flux linkages
-    and electromagnetic torque.
+    Takes raw data table, motor parameters, and data configuration,
+    processes the data, and calculates additional electrical parameters.
 
     Args:
-        raw_data: DataFrame containing raw measurement data with time, speed,
-                 torque, voltage, and current measurements.
-        motor_params: Dictionary containing motor parameters including
-                     polePairs and statorResistance.
+        raw_data: DataFrame containing raw measurement data.
+        motor_params: Dictionary containing motor parameters (pole_pairs, rs_ohm).
+        data_config: Dictionary containing column name configurations.
 
     Returns:
-        Processed DataFrame with additional calculated columns including:
-            - electricalFrequencyRads: Electrical frequency in rad/s
-            - fluxLinkageDAxisWb: D-axis flux linkage in Weber-turns
-            - fluxLinkageQAxisWb: Q-axis flux linkage in Weber-turns
-            - torqueElectromagneticNm: Electromagnetic torque in Nm
-            - currentDAxisArms: D-axis current RMS in Amperes
-            - currentQAxisArms: Q-axis current RMS in Amperes
-            - voltageDAxisVrms: D-axis voltage RMS in Volts
-            - voltageQAxisVrms: Q-axis voltage RMS in Volts
-
-    Example:
-        motor_params = {'actual': {'polePairs': 4, 'statorResistance': 0.1}}
-        processed_data = process_data(raw_data, motor_params)
+        Processed DataFrame with calculated columns.
     """
     processed_data = raw_data.copy()
 
-    pole_pairs = motor_params["actual"]["polePairs"]
-    stator_resistance = motor_params["actual"]["statorResistance"]
+    pole_pairs = motor_params["actual"]["pole_pairs"]
+    stator_resistance = motor_params["actual"]["rs_ohm"]
+
+    # Extract column names from config
+    input_cols = data_config["data"]["standardNames"]["input"]
+    comp_cols = data_config["data"]["standardNames"]["computed"]
 
     # Calculate electrical frequency
-    processed_data["electricalFrequencyRads"] = processed_data["speedRpm"].apply(
-        lambda speed: electrical_frequency(speed, pole_pairs)
-    )
+    processed_data[comp_cols["omega_e_rads"]] = processed_data[
+        input_cols["speed_rpm"]
+    ].apply(lambda speed: electrical_frequency(speed, pole_pairs))
 
     # Calculate flux linkages using voltage equation
-    processed_data["fluxLinkageDAxisWb"] = processed_data.apply(
+    processed_data[comp_cols["psi_d_wb"]] = processed_data.apply(
         lambda row: flux_linkage_d_voltage(
-            row["voltageQAxisVpeak"],
-            row["currentQAxisApeak"],
-            row["electricalFrequencyRads"],
+            row[input_cols["uq_vpk"]],
+            row[input_cols["iq_apk"]],
+            row[comp_cols["omega_e_rads"]],
             stator_resistance,
         ),
         axis=1,
     )
 
-    processed_data["fluxLinkageQAxisWb"] = processed_data.apply(
+    processed_data[comp_cols["psi_q_wb"]] = processed_data.apply(
         lambda row: flux_linkage_q_voltage(
-            row["voltageDAxisVpeak"],
-            row["currentDAxisApeak"],
-            row["electricalFrequencyRads"],
+            row[input_cols["ud_vpk"]],
+            row[input_cols["id_apk"]],
+            row[comp_cols["omega_e_rads"]],
             stator_resistance,
         ),
         axis=1,
     )
 
     # Calculate electromagnetic torque using flux linkage and current
-    processed_data["torqueElectromagneticNm"] = processed_data.apply(
+    processed_data[comp_cols["torque_e_nm"]] = processed_data.apply(
         lambda row: torque_flux(
-            row["fluxLinkageDAxisWb"],
-            row["fluxLinkageQAxisWb"],
-            row["currentQAxisApeak"],
-            row["currentDAxisApeak"],
+            row[comp_cols["psi_d_wb"]],
+            row[comp_cols["psi_q_wb"]],
+            row[input_cols["iq_apk"]],
+            row[input_cols["id_apk"]],
             pole_pairs,
         ),
         axis=1,
     )
 
     # Calculate RMS values from peak values
-    processed_data["currentDAxisArms"] = processed_data["currentDAxisApeak"].apply(
-        peak_to_rms
-    )
-    processed_data["currentQAxisArms"] = processed_data["currentQAxisApeak"].apply(
-        peak_to_rms
-    )
-    processed_data["voltageDAxisVrms"] = processed_data["voltageDAxisVpeak"].apply(
-        peak_to_rms
-    )
-    processed_data["voltageQAxisVrms"] = processed_data["voltageQAxisVpeak"].apply(
-        peak_to_rms
-    )
+    processed_data[comp_cols["id_arms"]] = processed_data[
+        input_cols["id_apk"]
+    ].apply(peak_to_rms)
+    processed_data[comp_cols["iq_arms"]] = processed_data[
+        input_cols["iq_apk"]
+    ].apply(peak_to_rms)
+    processed_data[comp_cols["ud_vrms"]] = processed_data[
+        input_cols["ud_vpk"]
+    ].apply(peak_to_rms)
+    processed_data[comp_cols["uq_vrms"]] = processed_data[
+        input_cols["uq_vpk"]
+    ].apply(peak_to_rms)
 
     # Display first few rows of processed data
     print("Processed data head:")

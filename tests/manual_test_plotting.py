@@ -34,13 +34,15 @@ def main():
 
     data = pd.DataFrame(
         {
-            "timeS": np.linspace(0, 1, len(current_d)),
-            "torqueElectromagneticNm": np.random.rand(len(current_d)),  # Dummy
-            "torqueMeasuredNm": np.random.rand(len(current_d)),  # Dummy
-            "currentDAxisApeak": current_d + noise,
-            "currentQAxisApeak": current_q + noise,
-            "fluxLinkageDAxisWb": flux_d,
-            "fluxLinkageQAxisWb": flux_q,
+            "time_s": np.linspace(0, 1, len(current_d)),
+            "torque_e_nm": np.random.rand(len(current_d)),  # Dummy
+            "torque_measured_nm": np.random.rand(len(current_d)),  # Dummy
+            "id_apk": current_d + noise,
+            "iq_apk": current_q + noise,
+            "psi_d_wb": flux_d,
+            "psi_q_wb": flux_q,
+            "ud_v": np.zeros(len(current_d)),  # Added for validation
+            "uq_v": np.zeros(len(current_d)),  # Added for validation
         }
     )
 
@@ -50,8 +52,6 @@ def main():
         print("plot_results executed successfully (check browser/output).")
     except Exception as e:
         print(f"Error in plot_results: {e}")
-
-
 
 
 if __name__ == "__main__":

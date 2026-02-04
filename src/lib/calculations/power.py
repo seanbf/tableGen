@@ -19,7 +19,7 @@ def apparent_power(voltage_rms: float, current_rms: float) -> float:
         Apparent power in Volt-Amperes (VA).
 
     Formula:
-        S = Vrms * Arms
+        S = Urms * Irms
     """
     return voltage_rms * current_rms
 
@@ -41,7 +41,7 @@ def electrical_power(
         Real electrical power in Watts.
 
     Formula:
-        P = Vrms * Arms * cos(φ)
+        P = Urms * Irms * cos(φ)
     """
     return voltage_rms * current_rms * power_factor
 

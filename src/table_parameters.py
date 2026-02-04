@@ -18,7 +18,7 @@ def get_table_parameters(table_config: dict) -> dict:
     Returns:
         Dictionary containing table generation parameters with:
             - size: Grid resolution (rows/columns)
-            - maxCurrent: Maximum current for table generation (Amps)
+            - max_current_a: Maximum current for table generation (Amps)
 
     Example:
         table_params = get_table_parameters(table_config)
@@ -40,7 +40,7 @@ def get_table_parameters(table_config: dict) -> dict:
         size = default_size
 
     # Prompt user for maximum current
-    default_max_current = defaults["maxCurrent"]
+    default_max_current = defaults["max_current_a"]
     user_input = input(
         f"Enter Maximum Current for Table Generation (A) [{default_max_current}]: "
     )
@@ -58,5 +58,5 @@ def get_table_parameters(table_config: dict) -> dict:
 
     return {
         "size": size,
-        "maxCurrent": max_current,
+        "max_current_a": max_current,
     }

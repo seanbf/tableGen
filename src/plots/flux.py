@@ -59,7 +59,6 @@ def generate_flux_surface(
         colorbar=colorbar_config,
         contours_z=dict(show=True, usecolormap=True, project_z=True),
         hovertemplate=(
-            "Id: %{x:.2f} A<br>Iq: %{y:.2f} A<br>"
-            "Flux: %{z:.4f} Wb<extra></extra>"
+            "Id: %{x:.2f} A<br>Iq: %{y:.2f} A<br>Psi: %{z:.4f} Wb<extra></extra>"
         ),
     )

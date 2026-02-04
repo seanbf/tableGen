@@ -7,7 +7,7 @@ speed units, such as RPM to rad/s conversions.
 import math
 
 
-def rpm2rads(rpm: float) -> float:
+def rpm_to_rads(rpm: float) -> float:
     """Convert RPM to radians per second.
 
     Converts rotational speed from revolutions per minute (RPM)
@@ -23,14 +23,14 @@ def rpm2rads(rpm: float) -> float:
         rads = rpm * (2π / 60)
 
     Examples:
-        >>> rpm2rads(1800)  # 1800 RPM = 188.5 rad/s
+        >>> rpm_to_rads(1800)  # 1800 RPM = 188.5 rad/s
         188.5
     """
     # Convert RPM to rad/s: 1 revolution = 2π radians, 1 minute = 60 seconds
     return rpm * (2 * math.pi / 60)
 
 
-def rads2rpm(rads: float) -> float:
+def rads_to_rpm(rads: float) -> float:
     """Convert radians per second to RPM.
 
     Converts rotational speed from radians per second (rad/s)
@@ -46,7 +46,7 @@ def rads2rpm(rads: float) -> float:
         rpm = rads * (60 / 2π)
 
     Examples:
-        >>> rads2rpm(188.5)  # 188.5 rad/s = 1800 RPM
+        >>> rads_to_rpm(188.5)  # 188.5 rad/s = 1800 RPM
         1800.0
     """
     # Convert rad/s to RPM: 1 revolution = 2π radians, 1 minute = 60 seconds

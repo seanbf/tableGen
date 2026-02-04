@@ -52,7 +52,7 @@ def main() -> None:
 
         # Step 4: Process data
         print("Step 3: Processing data...")
-        processed_data = process_data(data_table, motor_params)
+        processed_data = process_data(data_table, motor_params, config)
         print()
 
         # Step 5: Get table parameters
@@ -62,12 +62,12 @@ def main() -> None:
 
         # Step 6: Generate PMAC tables
         print("Step 4b: Generating PMAC tables...")
-        generate_pmac_tables(processed_data, motor_params, table_params)
+        generate_pmac_tables(processed_data, motor_params, table_params, config)
         print()
 
         # Step 7: Plot results
         print("Step 5: Plotting results...")
-        plot_results(processed_data)
+        plot_results(processed_data, config)
 
         print("Analysis completed successfully!")
 

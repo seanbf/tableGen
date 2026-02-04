@@ -21,8 +21,8 @@ def get_torque_traces(data: pd.DataFrame) -> list[go.Scattergl]:
     # Electromagnetic Torque
     traces.append(
         go.Scattergl(
-            x=data["timeS"],
-            y=data["torqueElectromagneticNm"],
+            x=data["time_s"],
+            y=data["torque_e_nm"],
             mode="lines",
             name="Torque Electromagnetic",
             # Standard colors
@@ -32,8 +32,8 @@ def get_torque_traces(data: pd.DataFrame) -> list[go.Scattergl]:
     # Measured Torque
     traces.append(
         go.Scattergl(
-            x=data["timeS"],
-            y=data["torqueMeasuredNm"],
+            x=data["time_s"],
+            y=data["torque_measured_nm"],
             mode="lines",
             name="Torque Measured",
             # Standard colors
