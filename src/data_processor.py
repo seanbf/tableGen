@@ -7,11 +7,11 @@ additional electrical parameters including flux linkages and electromagnetic tor
 import pandas as pd
 
 from src.lib.calculations.flux import (
-    calculate_flux_linkage_d_axis,
-    calculate_flux_linkage_q_axis,
+    flux_linkage_d_voltage,
+    flux_linkage_q_voltage,
 )
-from src.lib.calculations.frequency import calculate_electrical_frequency
-from src.lib.calculations.torque import calculate_torque_flux_nm
+from src.lib.calculations.frequency import electrical_frequency
+from src.lib.calculations.torque import torque_flux
 
 
 def peak_to_rms(peak_value: float) -> float:
@@ -69,12 +69,12 @@ def process_data(raw_data: pd.DataFrame, motor_params: dict) -> pd.DataFrame:
 
     # Calculate electrical frequency
     processed_data["electricalFrequencyRads"] = processed_data["speedRpm"].apply(
-        lambda speed: calculate_electrical_frequency(speed, pole_pairs)
+        lambda speed: electrical_frequency(speed, pole_pairs)
     )
 
     # Calculate flux linkages using voltage equation
     processed_data["fluxLinkageDAxisWb"] = processed_data.apply(
-        lambda row: calculate_flux_linkage_d_axis(
+        lambda row: flux_linkage_d_voltage(
             row["voltageQAxisVpeak"],
             row["currentQAxisApeak"],
             row["electricalFrequencyRads"],
@@ -84,7 +84,7 @@ def process_data(raw_data: pd.DataFrame, motor_params: dict) -> pd.DataFrame:
     )
 
     processed_data["fluxLinkageQAxisWb"] = processed_data.apply(
-        lambda row: calculate_flux_linkage_q_axis(
+        lambda row: flux_linkage_q_voltage(
             row["voltageDAxisVpeak"],
             row["currentDAxisApeak"],
             row["electricalFrequencyRads"],
@@ -95,7 +95,7 @@ def process_data(raw_data: pd.DataFrame, motor_params: dict) -> pd.DataFrame:
 
     # Calculate electromagnetic torque using flux linkage and current
     processed_data["torqueElectromagneticNm"] = processed_data.apply(
-        lambda row: calculate_torque_flux_nm(
+        lambda row: torque_flux(
             row["fluxLinkageDAxisWb"],
             row["fluxLinkageQAxisWb"],
             row["currentQAxisApeak"],

@@ -5,7 +5,7 @@ various formulations including flux linkage-based and expanded d-q methods.
 """
 
 
-def calculate_torque_flux_nm(
+def torque_flux(
     flux_linkage_d_axis_wb: float, flux_linkage_q_axis_wb: float,
     current_q_axis_a: float, current_d_axis_a: float, pole_pairs: int
 ) -> float:
@@ -33,7 +33,7 @@ def calculate_torque_flux_nm(
     )
 
 
-def calculate_torque_torque_idq_nm(
+def torque_idq(
     pole_pairs: int, flux_linkage_wb: float,
     d_axis_inductance_h: float, q_axis_inductance_h: float,
     current_d_axis_a: float, current_q_axis_a: float

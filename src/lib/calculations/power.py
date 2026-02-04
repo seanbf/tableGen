@@ -5,7 +5,7 @@ including apparent power, real power, reactive power, and power factor.
 """
 
 
-def calculate_apparent_power(voltage_rms: float, current_rms: float) -> float:
+def apparent_power(voltage_rms: float, current_rms: float) -> float:
     """Calculate apparent power using RMS voltage and current.
 
     Calculates the apparent power in Volt-Amperes (VA) using the standard
@@ -24,7 +24,7 @@ def calculate_apparent_power(voltage_rms: float, current_rms: float) -> float:
     return voltage_rms * current_rms
 
 
-def calculate_electrical_power(
+def electrical_power(
     voltage_rms: float, current_rms: float, power_factor: float
 ) -> float:
     """Calculate real electrical power.
@@ -46,7 +46,7 @@ def calculate_electrical_power(
     return voltage_rms * current_rms * power_factor
 
 
-def calculate_reactive_power(apparent_power: float, real_power: float) -> float:
+def reactive_power(apparent_power: float, real_power: float) -> float:
     """Calculate reactive power.
 
     Calculates the reactive power in Volt-Amperes Reactive (VAR) using
@@ -67,7 +67,7 @@ def calculate_reactive_power(apparent_power: float, real_power: float) -> float:
     return math.sqrt(apparent_power**2 - real_power**2)
 
 
-def calculate_power_factor(real_power: float, apparent_power: float) -> float:
+def power_factor(real_power: float, apparent_power: float) -> float:
     """Calculate power factor.
 
     Calculates the power factor from real and apparent power, constrained

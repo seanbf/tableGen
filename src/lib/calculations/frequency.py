@@ -7,7 +7,7 @@ and electrical frequency (Hz, rad/s), accounting for motor pole pairs.
 import math
 
 
-def calculate_electrical_frequency(
+def electrical_frequency(
     mechanical_speed_rpm: float, pole_pairs: int
 ) -> float:
     """Calculate electrical frequency from mechanical speed.
@@ -28,7 +28,7 @@ def calculate_electrical_frequency(
     return abs(mechanical_speed_rpm) * pole_pairs * (2 * math.pi / 60)
 
 
-def calculate_synchronous_speed(
+def synchronous_speed(
     frequency_hz: float, pole_pairs: int
 ) -> float:
     """Calculate synchronous speed from frequency and pole pairs.

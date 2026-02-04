@@ -5,7 +5,7 @@ reference frames, both from inductance and current, and from voltage equations.
 """
 
 
-def flux_linkage_d_axis(d_axis_current: float, inductance_d: float) -> float:
+def flux_linkage_d(d_axis_current: float, inductance_d: float) -> float:
     """Calculate d-axis flux linkage.
 
     Calculates the d-axis flux linkage from d-axis current and inductance.
@@ -23,7 +23,7 @@ def flux_linkage_d_axis(d_axis_current: float, inductance_d: float) -> float:
     return inductance_d * d_axis_current
 
 
-def flux_linkage_q_axis(q_axis_current: float, inductance_q: float) -> float:
+def flux_linkage_q(q_axis_current: float, inductance_q: float) -> float:
     """Calculate q-axis flux linkage.
 
     Calculates the q-axis flux linkage from q-axis current and inductance.
@@ -41,7 +41,7 @@ def flux_linkage_q_axis(q_axis_current: float, inductance_q: float) -> float:
     return inductance_q * q_axis_current
 
 
-def calculate_flux_linkage_d_axis(
+def flux_linkage_d_voltage(
     voltage_q_axis: float, current_q_axis: float,
     electrical_frequency_rads: float, stator_resistance: float
 ) -> float:
@@ -67,7 +67,7 @@ def calculate_flux_linkage_d_axis(
            electrical_frequency_rads
 
 
-def calculate_flux_linkage_q_axis(
+def flux_linkage_q_voltage(
     voltage_d_axis: float, current_d_axis: float,
     electrical_frequency_rads: float, stator_resistance: float
 ) -> float:
